@@ -1,5 +1,5 @@
 const controller = require("../controllers/auth.controllers");
-const { checkDuplicateUsernameOrEmail } = require("../middlewares/verifySignUp");
+const { checkDuplicatePatientUsernameOrEmail, checkDuplicateDoctorUsernameOrEmail } = require("../middlewares/verifySignUp");
 
 module.exports = function (app) {
   app.use(function (req, res, next) {
@@ -11,8 +11,15 @@ module.exports = function (app) {
   });
 
   app.post(
-    "/api/auth/patient/signup", [checkDuplicateUsernameOrEmail],
-    controller.signup
+    "/api/auth/patient/signup", [checkDuplicatePatientUsernameOrEmail],
+    controller.patientSignup
   );
-  app.post("/api/auth/patient/signin", controller.signin);
+  app.post("/api/auth/patient/signin", controller.patientSignin);
+
+
+  app.post(
+    "/api/auth/doctor/signup", [checkDuplicateDoctorUsernameOrEmail],
+    controller.doctorSignup
+  );
+  app.post("/api/auth/doctor/signin", controller.doctorSignin);
 };

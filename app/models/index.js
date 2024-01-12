@@ -6,5 +6,6 @@ const db = {};
 db.mongoose = mongoose;
 
 db.patinet = require("./patient.model");
+db.doctor = require("./doctor.model")
 
 module.exports = db;
