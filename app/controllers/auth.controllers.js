@@ -87,7 +87,9 @@ exports.doctorSignup = async (req, res) => {
       'city',
       'address',
       'phone_number',
-      'licence'
+      'licence',
+      'specialization',
+      'degree'
     ];
     const missingFields = requiredFields.filter(field => !req.body[field]);
 
@@ -105,6 +107,8 @@ exports.doctorSignup = async (req, res) => {
       city: req.body.city,
       address: req.body.address,
       phone_number: req.body.phone_number,
+      specialization: req.body.specialization,
+      degree: req.body.degree
     });
 
     await doctor.save();

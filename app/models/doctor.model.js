@@ -12,7 +12,9 @@ const Doctor = mongoose.model(
     city: String,
     address: String,
     phone_number: Number,
-    licence: String
+    licence: String,
+    degree: String,
+    specialization: String
   })
 );
 
