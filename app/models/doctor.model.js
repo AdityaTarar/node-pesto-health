@@ -14,7 +14,14 @@ const Doctor = mongoose.model(
     phone_number: Number,
     licence: String,
     degree: String,
-    specialization: String
+    specialization: String,
+    experience: Number,
+    inClinic: Boolean,
+    onlineConsultation: Boolean,
+    consultationFee: Number
+    // availabledays: String,
+    // timeslot: String,
+    // duration: Number
   })
 );
 

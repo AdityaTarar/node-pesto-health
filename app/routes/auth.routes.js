@@ -22,4 +22,8 @@ module.exports = function (app) {
     controller.doctorSignup
   );
   app.post("/api/auth/doctor/signin", controller.doctorSignin);
+  app.post("/api/auth/changepassword", controller.changePassword);
+  app.post("/api/auth/refreshToken", controller.refreshToken);
+  app.post("/api/auth/updateDoctorProfile", controller.updateDoctorProfile);
+  app.post("/api/auth/updatePatientProfile", [checkDuplicatePatientUsernameOrEmail], controller.updatePatientProfile);
 };

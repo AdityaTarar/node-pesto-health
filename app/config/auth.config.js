@@ -1,3 +1,4 @@
 module.exports = {
-  secret: "auth-app-secret-key",
+  accessToken: "pesto-health-access-token",
+  refreshToken: "pesto-health-refresh-token"
 };
