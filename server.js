@@ -2,12 +2,39 @@ const express = require('express');
 const db = require("./app/models");
 const cors = require("cors");
 const PORT = 3001;
-
+const Sentry = require("@sentry/node");
+const ProfilingIntegration = require("@sentry/profiling-node");
 const app = express();
 
 var corsOptions = {
   origin: "*",
 };
+Sentry.init({
+  dsn: "https://6d2dac7621e16bd1a10a1eba507e2cae@o4506669534937088.ingest.sentry.io/4506742622519296",
+  integrations: [
+    new Sentry.Integrations.Http({ tracing: true }),
+    new Sentry.Integrations.Express({ app }),
+    new ProfilingIntegration(),
+  ],
+  tracesSampleRate: 1.0,
+  profilesSampleRate: 1.0,
+});
+app.use(Sentry.Handlers.requestHandler());
+
+app.use(Sentry.Handlers.tracingHandler());
+
+app.get("/", function rootHandler(req, res) {
+  res.end("Hello world!");
+});
+
+app.use(Sentry.Handlers.errorHandler());
+
+// Optional fallthrough error handler
+app.use(function onError(err, req, res, next) {
+  res.statusCode = 500;
+  res.end(res.sentry + "\n");
+});
+
 app.use(cors(corsOptions));
 
 app.use(express.json());
