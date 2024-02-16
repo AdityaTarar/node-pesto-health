@@ -249,41 +249,61 @@ exports.cancelAppointment = async (req, res) => {
 }
 
 exports.recheduleAppointment = async (req, res) => {
-  const { appointmentId, date, newTime, oldTime, doctorId } = req.body
+  const { appointmentId, newDate, newTime, oldDate, oldTime, doctorId } = req.body;
   try {
+    // First, update the appointment itself with the new date and time
     const updateAppointment = await Appointments.findOneAndUpdate({ appointmentId: appointmentId }, {
-      date: date,
+      date: newDate,
       time: newTime,
       status: 'recheduled'
-    })
+    }, { new: true });
+
     if (!updateAppointment) {
-      return res.status(404).send({ message: 'Appointment not found' })
+      return res.status(404).send({ message: 'Appointment not found' });
     }
 
-    await DoctorAvailability.findOneAndUpdate(
-      { doctorId, 'availability.date': date },
-      {
-        $pull: {
-          'availability.$.unavailableTimeSlots': oldTime
+    // If the date has changed, remove the old time slot from the old date
+    if (newDate !== oldDate) {
+      await DoctorAvailability.findOneAndUpdate(
+        { doctorId, 'availability.date': oldDate },
+        {
+          $pull: {
+            'availability.$.unavailableTimeSlots': oldTime
+          }
         }
-      },
-      { new: true }
-    );
-    await DoctorAvailability.findOneAndUpdate(
-      { doctorId, 'availability.date': date },
-      {
-        $push: {
-          'availability.$.unavailableTimeSlots': newTime
+      );
+      // Add the new time slot to the new date
+      await DoctorAvailability.updateOne(
+        { doctorId, 'availability.date': newDate },
+        {
+          $push: {
+            'availability.$.unavailableTimeSlots': newTime
+          }
+        },
+        { upsert: true } // This will add a new date if it doesn't exist
+      );
+    } else {
+      // If the date hasn't changed, just update the time slot
+      await DoctorAvailability.findOneAndUpdate(
+        { doctorId, 'availability.date': newDate },
+        {
+          $pull: {
+            'availability.$.unavailableTimeSlots': oldTime
+          },
+          $push: {
+            'availability.$.unavailableTimeSlots': newTime
+          }
         }
-      },
-      { new: true }
-    );
-    res.status(200).send({ message: 'Appointment recheduled successfully' })
+      );
+    }
+
+    res.status(200).send({ message: 'Appointment rescheduled successfully' });
   } catch (error) {
-    console.error('Error searching doctors:', error);
+    console.error('Error rescheduling appointment:', error);
     res.status(500).json({ message: 'Internal server error' });
   }
-}
+};
+
 
 exports.getAppointmentStatusByID = async (req, res) => {
   const { appointmentId } = req.body;

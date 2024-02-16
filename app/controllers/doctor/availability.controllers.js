@@ -56,6 +56,7 @@ const generateTimeSlots = (date, availableTimeSlots, duration, unavailableTimeSl
       startTime = endTimeSlot;
     }
   });
+  // If not, you need to adjust the logic to fit the actual data structure
   let generatedUnavailableTimeSlots = unavailableTimeSlots; // Placeholder, adjust as needed
 
   return {
@@ -78,7 +79,6 @@ exports.getDoctorsAvailability = async (req, res) => {
         return generateTimeSlots(appointment.date, appointment.availableTimeSlots, parseInt(appointment.duration), appointment.unavailableTimeSlots);
       });
 
-      console.log('doctorsAvailability', filteredDoctorAvailability);
       res.status(200).json(filteredDoctorAvailability);
     } else {
       res.status(404).json({ message: 'Doctor availability not found' });
