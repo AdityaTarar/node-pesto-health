@@ -329,7 +329,7 @@ exports.getAppointmentByPatient = async (req, res) => {
 
     // Create the final response object
     const response = {
-      upcomingAppointments: upcomingAppointments,
+      upcomingAppointments: upcomingAppointments.filter((appointment) => appointment.status !== 'cancelled'),
       pastAppointments: pastAppointments
     };
 
