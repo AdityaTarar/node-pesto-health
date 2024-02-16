@@ -106,7 +106,8 @@ exports.bookApoointmentController = async (req, res) => {
       paymentMode: formData.paymentMode,
       paymentId: formData.paymentId,
       issue: formData.issue,
-      consultationFee: formData.consultationFee
+      consultationFee: formData.consultationFee,
+      doctorDetails: doctorDetails
     });
     const appointmentResponse = await appointment.save()
 
