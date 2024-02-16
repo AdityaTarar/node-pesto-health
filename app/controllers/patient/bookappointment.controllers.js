@@ -8,6 +8,9 @@ var axios = require("axios").default;
 const moment = require('moment');
 var CryptoJS = require("crypto-js");
 
+const accountSid = 'AC48d7ee453d89a1e2689fe333446c8844';
+const authToken = 'c1874e952bcbbb47648ff87bec4686ee';
+const client = require('twilio')(accountSid, authToken);
 
 exports.doctorSearch = async (req, res) => {
   try {
@@ -89,8 +92,8 @@ exports.bookApoointmentController = async (req, res) => {
   var bytes = CryptoJS.AES.decrypt(appointmentData, "pestohealth");
   var formData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
   const { doctorId, date, time } = formData
-  console.log('doctorId', doctorId);
   try {
+    const doctorDetails = await Doctor.findById(doctorId)
     const appointment = new Appointments({
       doctorId: formData.doctorId,
       patientId: formData.patientId,
@@ -106,7 +109,6 @@ exports.bookApoointmentController = async (req, res) => {
       consultationFee: formData.consultationFee
     });
     const appointmentResponse = await appointment.save()
-
 
     if (appointmentResponse?.onlineConsultation) {
       var options = {
@@ -184,7 +186,8 @@ exports.bookApoointmentController = async (req, res) => {
       patientInfo: appointment.patientInfo,
       date: appointment.date,
       time: appointment.time,
-      doctorId: appointment?.doctorId
+      doctorId: appointment?.doctorId,
+      doctorDetails: doctorDetails
     };
     const payments = new Payments({
       appointmentId: appointment?._id,
@@ -199,7 +202,19 @@ exports.bookApoointmentController = async (req, res) => {
       consultationFee: formData.consultationFee
     });
     await payments.save()
+
     res.status(201).json({ data: responseData, message: 'Appointmnet has been created successfully' })
+    // if (appointmentResponse) {
+    //   const messageBody = `Appointment booked successfully with ${`Dr .${doctorDetails.first_name} ${doctorDetails.last_name}`} on ${appointmentResponse.date} at ${appointmentResponse.time}.`;
+    //   client.messages
+    //     .create({
+    //       body: messageBody,
+    //       to: '+918412962312',
+    //       from: '+13145495492'
+    //     })
+    //     .then(message => console.log(message.sid))
+    //     .done();
+    // }
   } catch (error) {
     console.error('Error searching doctors:', error);
     res.status(500).json({ message: 'Internal server error' });

@@ -3,7 +3,6 @@ const db = require("./app/models");
 const cors = require("cors");
 const PORT = 3001;
 const Sentry = require("@sentry/node");
-const ProfilingIntegration = require("@sentry/profiling-node");
 const app = express();
 
 var corsOptions = {
@@ -14,7 +13,6 @@ Sentry.init({
   integrations: [
     new Sentry.Integrations.Http({ tracing: true }),
     new Sentry.Integrations.Express({ app }),
-    new ProfilingIntegration(),
   ],
   tracesSampleRate: 1.0,
   profilesSampleRate: 1.0,
