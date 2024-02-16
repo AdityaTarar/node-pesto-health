@@ -8,8 +8,8 @@ var axios = require("axios").default;
 const moment = require('moment');
 var CryptoJS = require("crypto-js");
 
-const accountSid = 'AC48d7ee453d89a1e2689fe333446c8844';
-const authToken = 'c1874e952bcbbb47648ff87bec4686ee';
+const accountSid = process.env.TWILIO_SID_TOKEN;
+const authToken = process.env.TWILIO_AUTH_TOKEN;
 const client = require('twilio')(accountSid, authToken);
 
 exports.doctorSearch = async (req, res) => {

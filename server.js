@@ -4,6 +4,7 @@ const cors = require("cors");
 const PORT = 3001;
 const Sentry = require("@sentry/node");
 const app = express();
+require('dotenv').config();
 
 var corsOptions = {
   origin: "*",
@@ -57,6 +58,7 @@ require('./app/routes/doctor/appointments.routes')(app);
 require('./app/routes/patient/medication.routes')(app);
 require('./app/routes/patient/vitals.routes')(app);
 require('./app/routes/payment.routes')(app);
+require('./app/routes/otp.routes')(app);
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
