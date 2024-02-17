@@ -331,7 +331,7 @@ exports.getAppointmentByPatient = async (req, res) => {
       });
     }
 
-    const pastAppointments = appointmentsList.filter(appointment => appointment.date < currentDate || appointment.status === 'completed');
+    const pastAppointments = appointmentsList.filter(appointment => appointment.date < currentDate || appointment.status === 'cancelled' || appointment.status === 'completed');
     const upcomingAppointments = appointmentsList.filter(appointment => appointment.date >= currentDate && appointment.status !== 'cancelled' && appointment.status !== 'completed');
 
     pastAppointments.sort((a, b) => (a.date > b.date) ? -1 : 1);
