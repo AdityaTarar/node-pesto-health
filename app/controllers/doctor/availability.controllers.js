@@ -75,9 +75,12 @@ exports.getDoctorsAvailability = async (req, res) => {
   try {
     const doctorsAvailability = await DoctorAvailability.findOne({ doctorId: doctorId });
     if (doctorsAvailability && doctorsAvailability.availability) {
-      const filteredDoctorAvailability = doctorsAvailability.availability.filter(appointment => appointment.date >= currentDate).map(appointment => {
-        return generateTimeSlots(appointment.date, appointment.availableTimeSlots, parseInt(appointment.duration), appointment.unavailableTimeSlots);
-      });
+      const filteredDoctorAvailability = doctorsAvailability.availability
+        .filter(appointment => appointment.date >= currentDate)
+        .sort((a, b) => new Date(a.date) - new Date(b.date)) // Sort dates in ascending order
+        .map(appointment => {
+          return generateTimeSlots(appointment.date, appointment.availableTimeSlots, parseInt(appointment.duration), appointment.unavailableTimeSlots);
+        });
 
       res.status(200).json(filteredDoctorAvailability);
     } else {
@@ -88,3 +91,4 @@ exports.getDoctorsAvailability = async (req, res) => {
     res.status(500).json({ message: 'Internal server error' });
   }
 };
+
